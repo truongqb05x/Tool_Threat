@@ -1,0 +1,24 @@
+<Window x:Class="ThreadsManagerUI.ImportProxyWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Nhập Proxy" Height="400" Width="400" WindowStartupLocation="CenterOwner" Background="White">
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Nhập danh sách Proxy (mỗi proxy một dòng):" FontWeight="SemiBold" Margin="0,0,0,10" FontSize="14" Foreground="#333"/>
+        
+        <TextBox x:Name="TxtProxies" Grid.Row="1" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Margin="0,0,0,15" Padding="10" BorderBrush="#CCCCCC" Background="#F5F5F5"/>
+        
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,20" HorizontalAlignment="Center">
+            <RadioButton x:Name="RbSequential" Content="Import lần lượt" IsChecked="True" Margin="0,0,20,0" FontWeight="SemiBold" Foreground="#555"/>
+            <RadioButton x:Name="RbRandom" Content="Import random" FontWeight="SemiBold" Foreground="#555"/>
+        </StackPanel>
+
+        <Button Grid.Row="3" Content="Lưu Proxy" HorizontalAlignment="Center" Padding="40,10" Background="#1877F2" Foreground="White" FontWeight="Bold" BorderBrush="Transparent" Cursor="Hand" Click="BtnImport_Click"/>
+    </Grid>
+</Window>

@@ -13,6 +13,30 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 from config import config
 
+def calculate_window_pos(thread_index):
+    """
+    Tính toán vị trí và kích thước cửa sổ thu nhỏ dựa trên chỉ số luồng (index).
+    Trả về tuple (x, y, width, height).
+    """
+    if thread_index is None or thread_index < 0:
+        return None
+        
+    # Kích thước mỗi cửa sổ
+    width = 400
+    height = 600
+    
+    # Giả sử màn hình ngang 1920px -> chứa được tối đa 4-5 cửa sổ 400px
+    cols = 4
+    
+    # Tính tọa độ
+    col = thread_index % cols
+    row = (thread_index // cols) % 2 # Hàng chẵn/lẻ (0 hoặc 1)
+    
+    x = col * width
+    y = row * height
+    
+    return (x, y, width, height)
+
 PROXY_FILE = "resources/proxy.txt"
 MAX_RETRY = 5
 UA_FILE = "resources/useragent.txt"
@@ -156,10 +180,10 @@ def get_service():
             manual_path = os.path.join(project_root, manual_path)
             
         if os.path.exists(manual_path):
-            print(f"🚀 Sử dụng chromedriver thủ công: {manual_path}")
+            #print(f"🚀 Sử dụng chromedriver thủ công: {manual_path}")
             return Service(executable_path=manual_path)
-        else:
-            print(f"⚠️ Cảnh báo: File CHROMEDRIVER_PATH không tồn tại: {manual_path}")
+        #else:
+            #print(f"⚠️ Cảnh báo: File CHROMEDRIVER_PATH không tồn tại: {manual_path}")
             
     return Service(ChromeDriverManager().install())
 
@@ -219,3 +243,21 @@ def create_driver(user_data_dir=None, proxy_config=None, window_pos=None, user_a
     except Exception as e:
         print(f"❌ Lỗi khởi tạo driver: {e}")
         raise e
+
+def extract_and_send_threads_cookie(driver, uid, current_cookie_threads):
+    auto_get = os.environ.get('AUTO_GET_COOKIE_THREADS', '0')
+    print(f"DEBUG: auto_get={auto_get}, current_cookie_threads='{current_cookie_threads}'")
+    if auto_get == '1' and not current_cookie_threads:
+        try:
+            cookies = driver.get_cookies()
+            print(f"DEBUG: driver.get_cookies() returned {len(cookies)} cookies")
+            threads_cookies = cookies
+            threads_cookies = cookies
+            print(f"DEBUG: Using all {len(threads_cookies)} cookies returned for threads.net")
+            if threads_cookies:
+                cookie_str = '; '.join([f"{c['name']}={c['value']}" for c in threads_cookies])
+                import sys
+                print(f"[UPDATE_COOKIE_THREADS] {uid}|{cookie_str}")
+                sys.stdout.flush()
+        except Exception as e:
+            print(f"⚠️ Lỗi lấy cookie Threads: {str(e)}")

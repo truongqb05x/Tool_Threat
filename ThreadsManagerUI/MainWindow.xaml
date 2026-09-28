@@ -7,6 +7,36 @@
         mc:Ignorable="d"
         Title="Phần mềm quản lý tài khoản Threads" Height="700" Width="1200" WindowStartupLocation="CenterScreen" Icon="logo.jpg">
     
+    <Window.Resources>
+        <Style x:Key="TabButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#666666"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="20,10"/>
+            <Setter Property="Margin" Value="0,0,8,0"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderThickness="0" 
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#EAF2FD"/>
+                    <Setter Property="Foreground" Value="#1877F2"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
     <Grid Background="#F5F6F8">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/> <!-- Header/Tabs -->
@@ -15,11 +45,11 @@
 
         <!-- Top Menu / Tabs -->
         <Border Grid.Row="0" BorderBrush="#E0E0E0" BorderThickness="0,0,0,1" Background="White">
-            <StackPanel Orientation="Horizontal" Margin="10,5">
-                <Button x:Name="BtnTabKetNoi" Content="Home" Padding="15,8" Background="#1877F2" Foreground="White" BorderThickness="0" Margin="0,0,5,0" FontWeight="Bold" Click="BtnTabKetNoi_Click"/>
-                <Button x:Name="BtnTabDangBai" Content="Đăng Bài" Padding="15,8" Background="Transparent" Foreground="Black" BorderThickness="0" Margin="0,0,5,0" FontWeight="Normal" Click="BtnTabDangBai_Click"/>
-                <Button x:Name="BtnTabConnectThreads" Content="Kết nối thread" Padding="15,8" Background="Transparent" Foreground="Black" BorderThickness="0" Margin="0,0,5,0" FontWeight="Normal" Click="BtnTabConnectThreads_Click"/>
-                <Button Content="Cấu Hình Hệ Thống" Padding="15,8" Background="Transparent" BorderThickness="0"/>
+            <StackPanel Orientation="Horizontal" Margin="15,10">
+                <Button x:Name="BtnTabKetNoi" Style="{StaticResource TabButtonStyle}" Content="Home" Background="#1877F2" Foreground="White" FontWeight="Bold" Click="BtnTabKetNoi_Click"/>
+                <Button x:Name="BtnTabDangBai" Style="{StaticResource TabButtonStyle}" Content="Đăng Bài" Click="BtnTabDangBai_Click"/>
+                <Button x:Name="BtnTabComment" Style="{StaticResource TabButtonStyle}" Content="Comment Bài Viết" Click="BtnTabComment_Click"/>
+                <Button x:Name="BtnTabNuoiTaiKhoan" Style="{StaticResource TabButtonStyle}" Content="Nuôi Tài Khoản" Click="BtnTabNuoiTaiKhoan_Click"/>
             </StackPanel>
         </Border>
 
@@ -40,7 +70,7 @@
                         <ComboBox x:Name="CboStatusFilter" Width="120" Margin="0,0,10,0" SelectedIndex="0" SelectionChanged="CboStatusFilter_SelectionChanged">
                             <ComboBoxItem Content="All Status"/>
                             <ComboBoxItem Content="Live"/>
-                            <ComboBoxItem Content="Dead"/>
+                            <ComboBoxItem Content="Die"/>
                         </ComboBox>
                         
                         <ComboBox Width="120" Margin="0,0,10,0" SelectedIndex="0">
@@ -68,11 +98,13 @@
                     <TextBlock x:Name="TxtSelectedCount" Grid.Row="0" Grid.Column="0" Text="Đã chọn: 0" FontWeight="Bold" Margin="0,0,0,5" Foreground="#333"/>
 
                     <!-- DataGrid -->
-                    <DataGrid x:Name="DgAccounts" Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Accounts}" AutoGenerateColumns="False" CanUserAddRows="False" Background="White" GridLinesVisibility="Horizontal" HeadersVisibility="Column" BorderBrush="#E0E0E0" VerticalGridLinesBrush="#EEEEEE" HorizontalGridLinesBrush="#EEEEEE" SelectionChanged="DgAccounts_SelectionChanged">
+                    <ScrollViewer Grid.Row="1" Grid.Column="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                        <DataGrid x:Name="DgAccounts" ItemsSource="{Binding Accounts}" AutoGenerateColumns="False" CanUserAddRows="False" Background="White" GridLinesVisibility="Horizontal" HeadersVisibility="Column" BorderBrush="#E0E0E0" VerticalGridLinesBrush="#EEEEEE" HorizontalGridLinesBrush="#EEEEEE" SelectionChanged="DgAccounts_SelectionChanged">
                         <DataGrid.ContextMenu>
                             <ContextMenu>
                                 <MenuItem Header="Copy" Click="MenuItem_Copy_Click"/>
                                 <MenuItem Header="Mở Chrome" Click="MenuItem_OpenChrome_Click"/>
+                                <MenuItem Header="Nuôi Tài Khoản" Click="MenuItem_Nurture_Click"/>
                                 <MenuItem Header="Xóa" Click="MenuItem_Delete_Click"/>
                             </ContextMenu>
                         </DataGrid.ContextMenu>
@@ -162,7 +194,23 @@
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="Cookie" Binding="{Binding Cookie}" Width="250">
+                            <DataGridTextColumn Header="2FA" Binding="{Binding TwoFA}" Width="150">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Margin" Value="10,0,0,0"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Cookie_Instagram" Binding="{Binding Cookie}" Width="250">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Margin" Value="10,0,0,0"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Cookie_Threads" Binding="{Binding CookieThreads}" Width="250">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="Margin" Value="10,0,0,0"/>
@@ -178,7 +226,7 @@
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="Trạng thái" Binding="{Binding Status}" Width="*" IsReadOnly="True">
+                            <DataGridTextColumn Header="Trạng thái" Binding="{Binding Status}" Width="*" MinWidth="100">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="Margin" Value="10,0,0,0"/>
@@ -189,6 +237,7 @@
                             </DataGridTextColumn>
                         </DataGrid.Columns>
                     </DataGrid>
+                    </ScrollViewer>
 
                     <!-- Right Sidebar -->
                     <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Margin="10,0,0,0">
@@ -220,7 +269,7 @@
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Dead / Spam" Foreground="#757575"/>
+                                    <TextBlock Text="Die / Spam" Foreground="#757575"/>
                                     <TextBlock Grid.Column="1" Text="{Binding DeadAccounts}" FontWeight="Bold" Foreground="#E53935"/>
                                 </Grid>
                                 
@@ -321,13 +370,13 @@
                         <StackPanel Grid.Row="0" Margin="15">
                             <TextBlock Text="Nguồn nội dung:" FontWeight="SemiBold" Margin="0,0,0,5" Foreground="#333"/>
                             <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                                <RadioButton x:Name="RbSourceExcel" Content="Nhập từ file Excel" IsChecked="True" Margin="0,0,15,0" Checked="RbSourceExcel_Checked"/>
+                                <RadioButton x:Name="RbSourceExcel" Content="Nhập từ file Excel/Txt" IsChecked="True" Margin="0,0,15,0" Checked="RbSourceExcel_Checked"/>
                                 <RadioButton x:Name="RbSourceGemini" Content="Tạo bằng Gemini" Checked="RbSourceGemini_Checked"/>
                             </StackPanel>
 
                             <!-- Panel Excel -->
                             <StackPanel x:Name="PanelExcel" Visibility="Visible">
-                                <TextBlock Text="File Excel (Có cột STT và Nội dung):" FontWeight="SemiBold" Margin="0,0,0,5" Foreground="#333"/>
+                                <TextBlock Text="File Excel/Txt nội dung:" FontWeight="SemiBold" Margin="0,0,0,5" Foreground="#333"/>
                                 <Grid Margin="0,0,0,15">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
@@ -406,15 +455,30 @@
 
                                 <TextBlock Text="Số luồng (Threads):" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,10,0" Foreground="#333"/>
                                 <TextBox x:Name="TxtThreadCount" Text="1" Width="40" Padding="5" TextAlignment="Center"/>
+
+                                <TextBlock Text="|" VerticalAlignment="Center" Margin="15,0" Foreground="#CCCCCC" FontWeight="Bold"/>
+                                
+                                <CheckBox x:Name="ChkPostLoop" Content="Lặp lại danh sách:" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,10,0" Foreground="#333"/>
+                                <TextBox x:Name="TxtPostLoopCount" Text="1" Width="40" Padding="5" TextAlignment="Center" IsEnabled="{Binding IsChecked, ElementName=ChkPostLoop}"/>
+                                <TextBlock Text="lần" VerticalAlignment="Center" Margin="5,0"/>
                             </StackPanel>
                         </StackPanel>
 
                         <!-- Thanh điều khiển -->
                         <Border Grid.Row="1" Background="#F5F6F8" BorderBrush="#E0E0E0" BorderThickness="0,1,0,1" Padding="15,10">
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                <Button Content="▶ Chạy Đăng Bài" Background="#4CAF50" Foreground="White" FontWeight="Bold" Padding="20,10" Margin="0,0,10,0" BorderThickness="0" Click="BtnStartPost_Click"/>
-                                <Button Content="⏹ Dừng Lại" Background="#F44336" Foreground="White" FontWeight="Bold" Padding="20,10" BorderThickness="0" Click="BtnStopPost_Click"/>
-                            </StackPanel>
+                            <Grid>
+                                <!-- Phần hiển thị Progress -->
+                                <StackPanel x:Name="PanelProgress" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Visibility="Collapsed">
+                                    <ProgressBar IsIndeterminate="True" Width="20" Height="20" Margin="0,0,10,0" Foreground="#1877F2" Background="Transparent"/>
+                                    <TextBlock x:Name="TxtPostProgress" Text="Đang chạy: 0/0" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#1877F2"/>
+                                </StackPanel>
+                                
+                                <!-- Nút chức năng -->
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <Button x:Name="BtnStartPost" Content="▶ Chạy Đăng Bài" Background="#4CAF50" Foreground="White" FontWeight="Bold" Padding="20,10" Margin="0,0,10,0" BorderThickness="0" Click="BtnStartPost_Click"/>
+                                    <Button x:Name="BtnStopPost" Content="⏹ Dừng Lại" Background="#F44336" Foreground="White" FontWeight="Bold" Padding="20,10" BorderThickness="0" Click="BtnStopPost_Click"/>
+                                </StackPanel>
+                            </Grid>
                         </Border>
 
                         <!-- Box Logs -->
@@ -430,8 +494,8 @@
                 </Border>
             </Grid>
             
-            <!-- TAB 3: KẾT NỐI THREADS (Tương tác) -->
-            <Grid x:Name="GridConnectThreads" Visibility="Collapsed" Margin="10">
+            <!-- TAB 4: COMMENT BÀI VIẾT -->
+            <Grid x:Name="GridComment" Visibility="Collapsed" Margin="10">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="350"/>
                     <ColumnDefinition Width="*"/>
@@ -446,12 +510,12 @@
                         </Grid.RowDefinitions>
                         
                         <StackPanel Grid.Row="0" Margin="10">
-                            <Button Content="Chọn Tài Khoản" Background="#1877F2" Foreground="White" FontWeight="Bold" Padding="10" Click="BtnSelectAccountsForConnect_Click" BorderThickness="0"/>
-                            <TextBlock Text="Danh sách tài khoản kết nối:" Margin="0,15,0,5" FontWeight="SemiBold" Foreground="#555"/>
+                            <Button Content="Chọn Tài Khoản" Background="#1877F2" Foreground="White" FontWeight="Bold" Padding="10" BorderThickness="0" Click="BtnSelectAccountsForComment_Click"/>
+                            <TextBlock Text="Danh sách tài khoản chờ comment:" Margin="0,15,0,5" FontWeight="SemiBold" Foreground="#555"/>
                         </StackPanel>
 
-                        <!-- Danh sách account chạy kết nối -->
-                        <DataGrid x:Name="DgConnectAccounts" Grid.Row="1" ItemsSource="{Binding SelectedAccountsForConnect}" AutoGenerateColumns="False" CanUserAddRows="False" Background="White" GridLinesVisibility="All" HeadersVisibility="Column" BorderBrush="#E0E0E0" VerticalGridLinesBrush="#EEEEEE" HorizontalGridLinesBrush="#EEEEEE" BorderThickness="0,1,0,0">
+                        <!-- Danh sách account chạy comment -->
+                        <DataGrid x:Name="DgCommentAccounts" Grid.Row="1" ItemsSource="{Binding SelectedAccountsForComment}" AutoGenerateColumns="False" CanUserAddRows="False" Background="White" GridLinesVisibility="All" HeadersVisibility="Column" BorderBrush="#E0E0E0" VerticalGridLinesBrush="#EEEEEE" HorizontalGridLinesBrush="#EEEEEE" BorderThickness="0,1,0,0">
                             <DataGrid.Resources>
                                 <Style TargetType="DataGridColumnHeader">
                                     <Setter Property="Background" Value="#F5F6F8"/>
@@ -489,7 +553,7 @@
                                 <DataGridTemplateColumn Width="50">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <Button Content="Xóa" Foreground="Red" Background="Transparent" BorderThickness="0" Click="BtnRemoveConnectAccount_Click" ToolTip="Xóa khỏi danh sách chờ"/>
+                                            <Button Content="Xóa" Foreground="Red" Background="Transparent" BorderThickness="0" ToolTip="Xóa khỏi danh sách chờ" Click="BtnRemoveCommentAccount_Click"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
@@ -510,25 +574,74 @@
                         <!-- Panel Cấu hình -->
                         <StackPanel Grid.Row="0" Margin="15">
                             <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
-                                <TextBlock Text="Khoảng cách giữa 2 tài khoản:" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,10,0" Foreground="#333"/>
-                                <TextBox x:Name="TxtConnectDelayMin" Text="10" Width="40" Padding="5" TextAlignment="Center"/>
+                                <TextBlock Text="Khoảng cách giữa 2 lần comment:" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,10,0" Foreground="#333"/>
+                                <TextBox x:Name="TxtCommentDelayMin" Text="10" Width="40" Padding="5" TextAlignment="Center"/>
                                 <TextBlock Text="đến" VerticalAlignment="Center" Margin="5,0"/>
-                                <TextBox x:Name="TxtConnectDelayMax" Text="20" Width="40" Padding="5" TextAlignment="Center"/>
+                                <TextBox x:Name="TxtCommentDelayMax" Text="20" Width="40" Padding="5" TextAlignment="Center"/>
                                 <TextBlock Text="giây" VerticalAlignment="Center" Margin="5,0"/>
 
                                 <TextBlock Text="|" VerticalAlignment="Center" Margin="15,0" Foreground="#CCCCCC" FontWeight="Bold"/>
 
                                 <TextBlock Text="Số luồng (Threads):" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,10,0" Foreground="#333"/>
-                                <TextBox x:Name="TxtConnectThreadCount" Text="1" Width="40" Padding="5" TextAlignment="Center"/>
+                                <TextBox x:Name="TxtCommentThreadCount" Text="1" Width="40" Padding="5" TextAlignment="Center"/>
+
+                                <TextBlock Text="|" VerticalAlignment="Center" Margin="15,0" Foreground="#CCCCCC" FontWeight="Bold"/>
+
+                                <TextBlock Text="Số bài comment/acc:" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,10,0" Foreground="#333"/>
+                                <TextBox x:Name="TxtCommentNum" Text="1" Width="40" Padding="5" TextAlignment="Center"/>
+
+                                <TextBlock Text="|" VerticalAlignment="Center" Margin="15,0" Foreground="#CCCCCC" FontWeight="Bold"/>
+                                
+                                <CheckBox x:Name="ChkCommentLoop" Content="Lặp lại danh sách:" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,10,0" Foreground="#333"/>
+                                <TextBox x:Name="TxtCommentLoopCount" Text="1" Width="40" Padding="5" TextAlignment="Center" IsEnabled="{Binding IsChecked, ElementName=ChkCommentLoop}"/>
+                                <TextBlock Text="lần" VerticalAlignment="Center" Margin="5,0"/>
                             </StackPanel>
+                            
+                            <TextBlock Text="Chế độ Comment:" FontWeight="SemiBold" Margin="0,0,0,5" Foreground="#333"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
+                                <RadioButton x:Name="RbCommentNewfeed" Content="Comment Newfeed" IsChecked="True" Margin="0,0,15,0"/>
+                                <RadioButton x:Name="RbCommentTrending" Content="Comment theo bài thịnh hành"/>
+                            </StackPanel>
+                            
+
+
+                            <TextBlock Text="File nội dung comment (.xlsx/.txt):" FontWeight="SemiBold" Margin="0,0,0,5" Foreground="#333"/>
+                            <Grid Margin="0,0,0,15">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="80"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox x:Name="TxtCommentExcelPath" Grid.Column="0" IsReadOnly="True" Background="#F9F9F9" Padding="5,0"/>
+                                <Button Grid.Column="1" Content="Chọn File" Margin="10,0,0,0" Click="BtnSelectCommentExcel_Click"/>
+                            </Grid>
+                            
+                            <CheckBox x:Name="ChkCommentUseMedia" Content="Kèm Hình Ảnh/Video:" FontWeight="SemiBold" Margin="0,0,0,5" Foreground="#333" Checked="ChkCommentUseMedia_Checked" Unchecked="ChkCommentUseMedia_Unchecked"/>
+                            <Grid x:Name="PanelCommentMedia" Visibility="Collapsed" Margin="0,0,0,15">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="80"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox x:Name="TxtCommentMediaPath" Grid.Column="0" IsReadOnly="True" Background="#F9F9F9" Padding="5,0"/>
+                                <Button Grid.Column="1" Content="Chọn File" Margin="10,0,0,0" Click="BtnSelectCommentMedia_Click"/>
+                            </Grid>
+                            
+
                         </StackPanel>
 
                         <!-- Thanh điều khiển -->
                         <Border Grid.Row="1" Background="#F5F6F8" BorderBrush="#E0E0E0" BorderThickness="0,1,0,1" Padding="15,10">
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                <Button Content="▶ Chạy Kết Nối" Background="#4CAF50" Foreground="White" FontWeight="Bold" Padding="20,10" Margin="0,0,10,0" BorderThickness="0" Click="BtnStartConnect_Click"/>
-                                <Button Content="⏹ Dừng Lại" Background="#F44336" Foreground="White" FontWeight="Bold" Padding="20,10" BorderThickness="0" Click="BtnStopConnect_Click"/>
-                            </StackPanel>
+                            <Grid>
+                                <!-- Phần hiển thị Progress -->
+                                <StackPanel x:Name="PanelProgressComment" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Visibility="Collapsed">
+                                    <ProgressBar IsIndeterminate="True" Width="20" Height="20" Margin="0,0,10,0" Foreground="#1877F2" Background="Transparent"/>
+                                    <TextBlock x:Name="TxtCommentProgress" Text="Đang chạy: 0/0" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#1877F2"/>
+                                </StackPanel>
+
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <Button x:Name="BtnStartComment" Content="▶ Chạy Comment" Background="#4CAF50" Foreground="White" FontWeight="Bold" Padding="20,10" Margin="0,0,10,0" BorderThickness="0" Click="BtnStartComment_Click"/>
+                                    <Button x:Name="BtnStopComment" Content="⏹ Dừng Lại" Background="#F44336" Foreground="White" FontWeight="Bold" Padding="20,10" BorderThickness="0" Click="BtnStopComment_Click"/>
+                                </StackPanel>
+                            </Grid>
                         </Border>
 
                         <!-- Box Logs -->
@@ -538,12 +651,173 @@
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
                             <TextBlock Grid.Row="0" Text="Nhật ký hoạt động (Logs):" FontWeight="SemiBold" Margin="15,10,0,5" Foreground="#555"/>
-                            <TextBox x:Name="TxtLogsConnect" Grid.Row="1" Background="White" Foreground="Black" BorderBrush="#CCCCCC" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Margin="15,0,15,15" Padding="10"/>
+                            <TextBox x:Name="TxtLogsComment" Grid.Row="1" Background="White" Foreground="Black" BorderBrush="#CCCCCC" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Margin="15,0,15,15" Padding="10"/>
                         </Grid>
                     </Grid>
                 </Border>
             </Grid>
             
+            <!-- TAB 5: NUÔI TÀI KHOẢN -->
+            <Grid x:Name="GridNuoiTaiKhoan" Visibility="Collapsed" Margin="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="350"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Cột trái: Chọn tài khoản -->
+                <Border Grid.Column="0" Background="White" BorderBrush="#E0E0E0" BorderThickness="1" Margin="0,0,10,0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        
+                        <StackPanel Grid.Row="0" Margin="10">
+                            <Button Content="Chọn Tài Khoản" Background="#1877F2" Foreground="White" FontWeight="Bold" Padding="10" Click="BtnSelectAccountsForNurture_Click" BorderThickness="0"/>
+                            <TextBlock Text="Danh sách tài khoản chờ chạy:" Margin="0,15,0,5" FontWeight="SemiBold" Foreground="#555"/>
+                        </StackPanel>
+
+                        <!-- Danh sách account chạy -->
+                        <DataGrid x:Name="DgNurtureAccounts" Grid.Row="1" ItemsSource="{Binding SelectedAccountsForNurture}" AutoGenerateColumns="False" CanUserAddRows="False" Background="White" GridLinesVisibility="All" HeadersVisibility="Column" BorderBrush="#E0E0E0" VerticalGridLinesBrush="#EEEEEE" HorizontalGridLinesBrush="#EEEEEE" BorderThickness="0,1,0,0">
+                            <DataGrid.Resources>
+                                <Style TargetType="DataGridColumnHeader">
+                                    <Setter Property="Background" Value="#F5F6F8"/>
+                                    <Setter Property="Foreground" Value="#666666"/>
+                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                    <Setter Property="Padding" Value="10,8"/>
+                                    <Setter Property="BorderBrush" Value="#E0E0E0"/>
+                                    <Setter Property="BorderThickness" Value="0,0,1,1"/>
+                                </Style>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="Padding" Value="5,5"/>
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                </Style>
+                            </DataGrid.Resources>
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="STT" Binding="{Binding Index}" Width="50" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="Username" Binding="{Binding Uid}" Width="*" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="Quá trình" Binding="{Binding PostProcessStatus}" Width="80" IsReadOnly="True">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="TextAlignment" Value="Center"/>
+                                            <Setter Property="Foreground" Value="#1877F2"/>
+                                            <Setter Property="FontWeight" Value="SemiBold"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding PostProcessStatus}" Value="Xong">
+                                                    <Setter Property="Foreground" Value="#4CAF50"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding PostProcessStatus}" Value="Die">
+                                                    <Setter Property="Foreground" Value="#F44336"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+                                <DataGridTemplateColumn Width="50">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="Xóa" Foreground="Red" Background="Transparent" BorderThickness="0" Click="BtnRemoveNurtureAccount_Click" ToolTip="Xóa khỏi danh sách chờ"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </Border>
+
+                <!-- Cột phải: Cấu hình và Log -->
+                <Border Grid.Column="1" Background="White" BorderBrush="#E0E0E0" BorderThickness="1">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Panel Cấu hình -->
+                        <StackPanel Grid.Row="0" Margin="15">
+                            <TextBlock Text="Cấu hình Nuôi tài khoản:" FontWeight="SemiBold" Margin="0,0,0,15" Foreground="#333" FontSize="16"/>
+
+                            <Grid Margin="0,0,0,15">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Lướt Newfeed -->
+                                <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                                    <CheckBox x:Name="ChkScrollNewsfeed" Content="Lướt Newfeed" FontWeight="Bold" Margin="0,0,0,5" IsChecked="True"/>
+                                    <StackPanel Margin="20,0,0,0" IsEnabled="{Binding IsChecked, ElementName=ChkScrollNewsfeed}">
+                                        <CheckBox x:Name="ChkLikePost" Content="Thả tym bài viết ngẫu nhiên" Margin="0,5,0,5" IsChecked="True"/>
+                                        <StackPanel Orientation="Horizontal" Margin="20,0,0,0" IsEnabled="{Binding IsChecked, ElementName=ChkLikePost}">
+                                            <TextBlock Text="Delay:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                            <TextBox x:Name="TxtLikeDelayMin" Text="10" Width="30" Padding="5" TextAlignment="Center"/>
+                                            <TextBlock Text="đến" VerticalAlignment="Center" Margin="5,0"/>
+                                            <TextBox x:Name="TxtLikeDelayMax" Text="30" Width="30" Padding="5" TextAlignment="Center"/>
+                                            <TextBlock Text="giây" VerticalAlignment="Center" Margin="5,0"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <!-- Đọc thông báo -->
+                                <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                                    <CheckBox x:Name="ChkReadNotifications" Content="Đọc thông báo" FontWeight="Bold" Margin="0,0,0,5" IsChecked="True"/>
+                                    <StackPanel Margin="20,0,0,0" IsEnabled="{Binding IsChecked, ElementName=ChkReadNotifications}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="Số lượng cần đọc:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                            <TextBox x:Name="TxtNotificationCount" Text="2" Width="40" Padding="5" TextAlignment="Center"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Tổng thời gian và số luồng -->
+                            <Border BorderBrush="#EEEEEE" BorderThickness="0,1,0,0" Padding="0,10,0,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Tổng thời gian nuôi (phút):" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,10,0" Foreground="#333"/>
+                                    <TextBox x:Name="TxtTotalNurtureMinutes" Text="30" Width="40" Padding="5" TextAlignment="Center"/>
+                                    
+                                    <TextBlock Text="|" VerticalAlignment="Center" Margin="15,0" Foreground="#CCCCCC" FontWeight="Bold"/>
+
+                                    <TextBlock Text="Số luồng (Threads):" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,10,0" Foreground="#333"/>
+                                    <TextBox x:Name="TxtNurtureThreadCount" Text="1" Width="40" Padding="5" TextAlignment="Center"/>
+
+                                    <TextBlock Text="|" VerticalAlignment="Center" Margin="15,0" Foreground="#CCCCCC" FontWeight="Bold"/>
+                                    
+                                    <CheckBox x:Name="ChkNurtureLoop" Content="Lặp lại danh sách:" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,10,0" Foreground="#333"/>
+                                    <TextBox x:Name="TxtNurtureLoopCount" Text="1" Width="40" Padding="5" TextAlignment="Center" IsEnabled="{Binding IsChecked, ElementName=ChkNurtureLoop}"/>
+                                    <TextBlock Text="lần" VerticalAlignment="Center" Margin="5,0"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- Thanh điều khiển -->
+                        <Border Grid.Row="1" Background="#F5F6F8" BorderBrush="#E0E0E0" BorderThickness="0,1,0,1" Padding="15,10">
+                            <Grid>
+                                <StackPanel x:Name="PanelProgressNurture" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Visibility="Collapsed">
+                                    <ProgressBar IsIndeterminate="True" Width="20" Height="20" Margin="0,0,10,0" Foreground="#1877F2" Background="Transparent"/>
+                                    <TextBlock x:Name="TxtNurtureProgress" Text="Đang chạy: 0/0" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#1877F2"/>
+                                </StackPanel>
+                                
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <Button x:Name="BtnStartNurture" Content="▶ Chạy Nuôi Tài Khoản" Background="#4CAF50" Foreground="White" FontWeight="Bold" Padding="20,10" Margin="0,0,10,0" BorderThickness="0" Click="BtnStartNurture_Click"/>
+                                    <Button x:Name="BtnStopNurture" Content="⏹ Dừng Lại" Background="#F44336" Foreground="White" FontWeight="Bold" Padding="20,10" BorderThickness="0" Click="BtnStopNurture_Click"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <!-- Box Logs -->
+                        <Grid Grid.Row="2">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Text="Nhật ký hoạt động (Logs):" FontWeight="SemiBold" Margin="15,10,0,5" Foreground="#555"/>
+                            <TextBox x:Name="TxtNurtureLogs" Grid.Row="1" Background="White" Foreground="Black" BorderBrush="#CCCCCC" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Margin="15,0,15,15" Padding="10"/>
+                        </Grid>
+                    </Grid>
+                </Border>
+            </Grid>
         </Grid>
 
         <!-- Loading Overlay -->

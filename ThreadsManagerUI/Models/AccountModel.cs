@@ -10,6 +10,7 @@ namespace ThreadsManagerUI.Models
         private string _uid;
         private string _password;
         private string _cookie;
+        private string _cookieThreads;
         private string _proxy;
         private string _status;
         private string _notes;
@@ -47,6 +48,12 @@ namespace ThreadsManagerUI.Models
         {
             get => _cookie;
             set { _cookie = value; OnPropertyChanged(); }
+        }
+
+        public string CookieThreads
+        {
+            get => _cookieThreads;
+            set { _cookieThreads = value; OnPropertyChanged(); }
         }
 
         public string Token

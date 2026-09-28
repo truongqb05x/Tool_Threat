@@ -17,17 +17,19 @@
         </StackPanel>
 
         <!-- Khu vực nhập liệu -->
-        <TextBox x:Name="TxtInputData" Grid.Row="1" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Margin="0,0,0,15" BorderBrush="#CCCCCC" TextChanged="TxtInputData_TextChanged"/>
+        <TextBox x:Name="TxtInputData" Grid.Row="1" AcceptsReturn="True" TextWrapping="NoWrap" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Margin="0,0,0,15" BorderBrush="#CCCCCC" TextChanged="TxtInputData_TextChanged"/>
 
         <!-- Bảng hiển thị preview data -->
         <DataGrid x:Name="DgPreview" Grid.Row="2" Margin="0,0,0,20" 
                   AutoGenerateColumns="False" CanUserAddRows="False" 
                   Background="White" BorderBrush="#E0E0E0" HeadersVisibility="Column"
-                  GridLinesVisibility="All" HorizontalGridLinesBrush="#E0E0E0" VerticalGridLinesBrush="#E0E0E0">
+                  GridLinesVisibility="All" HorizontalGridLinesBrush="#E0E0E0" VerticalGridLinesBrush="#E0E0E0"
+                  ScrollViewer.HorizontalScrollBarVisibility="Auto">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="UID" Binding="{Binding Uid}" Width="*"/>
-                <DataGridTextColumn Header="Pass" Binding="{Binding Password}" Width="*"/>
-                <DataGridTextColumn Header="Cookie" Binding="{Binding Cookie}" Width="2*"/>
+                <DataGridTextColumn Header="UID" Binding="{Binding Uid}" Width="*" MinWidth="100"/>
+                <DataGridTextColumn Header="Pass" Binding="{Binding Password}" Width="*" MinWidth="100"/>
+                <DataGridTextColumn Header="2FA" Binding="{Binding TwoFA}" Width="*" MinWidth="150"/>
+                <DataGridTextColumn Header="Cookie" Binding="{Binding Cookie}" Width="2*" MinWidth="250"/>
             </DataGrid.Columns>
         </DataGrid>
 

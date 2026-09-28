@@ -31,17 +31,50 @@ public partial class ImportAccountWindow : Window
         {
             var parts = line.Split('|');
             var acc = new Models.AccountModel();
-            
-            // Format: UID|Pass|Cookie|Token|Email|PassEmail|2FA|Proxy|UserAgent
+
+            // Phân bổ UID và Password luôn là 2 cột đầu tiên
             if (parts.Length > 0) acc.Uid = parts[0].Trim();
             if (parts.Length > 1) acc.Password = parts[1].Trim();
-            if (parts.Length > 2) acc.Cookie = parts[2].Trim();
-            if (parts.Length > 3) acc.Token = parts[3].Trim();
-            if (parts.Length > 4) acc.Email = parts[4].Trim();
-            if (parts.Length > 5) acc.PassEmail = parts[5].Trim();
-            if (parts.Length > 6) acc.TwoFA = parts[6].Trim();
-            if (parts.Length > 7) acc.Proxy = parts[7].Trim();
-            if (parts.Length > 8) acc.UserAgent = parts[8].Trim();
+
+            // Thêm logic tự nhận dạng các phần còn lại
+            var unassignedParts = new System.Collections.Generic.List<string>();
+
+            for (int i = 2; i < parts.Length; i++)
+            {
+                string p = parts[i].Trim();
+                if (string.IsNullOrEmpty(p)) continue;
+
+                // Nhận dạng Cookie
+                if (p.Contains("sessionid=") || p.Contains("csrftoken=") || (p.Contains("=") && p.Contains(";")))
+                {
+                    acc.Cookie = p;
+                }
+                // Nhận dạng Token
+                else if (p.StartsWith("EAAB") || p.StartsWith("EAAAAU"))
+                {
+                    acc.Token = p;
+                }
+                // Nhận dạng 2FA (thường là chuỗi Base32 dài, chỉ chứa chữ hoa và số)
+                else if (p.Length >= 16 && p.Length <= 64 && System.Text.RegularExpressions.Regex.IsMatch(p.ToUpper(), @"^[A-Z2-7]+$"))
+                {
+                    acc.TwoFA = p;
+                }
+                // Nhận dạng Email
+                else if (p.Contains("@") && p.Contains("."))
+                {
+                    acc.Email = p;
+                }
+                else
+                {
+                    unassignedParts.Add(p);
+                }
+            }
+
+            // Phân bổ các phần chưa được nhận dạng
+            if (unassignedParts.Count > 0 && string.IsNullOrEmpty(acc.PassEmail) && !string.IsNullOrEmpty(acc.Email))
+            {
+                acc.PassEmail = unassignedParts[0];
+            }
 
             PreviewAccounts.Add(acc);
         }
