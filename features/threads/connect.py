@@ -77,35 +77,46 @@ def connect_threads(uid, cookies, proxy_str=None, ua_str=None):
 
         if not is_logged_in:
             cookie_failed = False
-            if login_method == 0 and cookies:
-                print(f"🔄 Đang ưu tiên đăng nhập bằng Cookie. Đang nạp {len(cookies)} cookies mới...")
-                for cookie in cookies:
-                    try:
-                        driver.add_cookie(cookie)
-                    except Exception:
-                        pass
-                
-                print("♻️ Làm mới trang Instagram...")
-                driver.refresh()
-                time.sleep(5)
-                
-                current_url = driver.current_url.lower()
-                if "accounts/suspended" in current_url:
-                    print("[ACCOUNT_DIE]")
-                    print("❌ Tài khoản đã bị đình chỉ (Suspended)!")
-                    return "die"
+            # login_method 1: Chỉ Cookie | login_method 2: Cả 2 (Cookie trước)
+            if login_method in [1, 2]:
+                if cookies:
+                    print(f"🔄 Đang nạp {len(cookies)} cookies mới...")
+                    for cookie in cookies:
+                        try:
+                            driver.add_cookie(cookie)
+                        except Exception:
+                            pass
                     
-                if "login" in current_url or not driver.get_cookie("sessionid") or driver.find_elements(By.NAME, "pass") or driver.find_elements(By.NAME, "password"):
-                    print("❌ Cookie đã chết hoặc không hợp lệ. Đang chuyển sang đăng nhập bằng Password...")
-                    cookie_failed = True
+                    print("♻️ Làm mới trang Instagram...")
+                    driver.refresh()
+                    time.sleep(5)
+                    
+                    current_url = driver.current_url.lower()
+                    if "accounts/suspended" in current_url:
+                        print("[ACCOUNT_DIE]")
+                        print("❌ Tài khoản đã bị đình chỉ (Suspended)!")
+                        return "die"
+                        
+                    if "login" in current_url or not driver.get_cookie("sessionid") or driver.find_elements(By.NAME, "pass") or driver.find_elements(By.NAME, "password"):
+                        if login_method == 1:
+                            print("❌ Cookie đã chết. (Cấu hình: Chỉ đăng nhập bằng Cookie) -> Dừng.")
+                            return False
+                        else:
+                            print("❌ Cookie đã chết. Đang chuyển sang đăng nhập bằng Password...")
+                            cookie_failed = True
+                    else:
+                        print("✅ Đăng nhập Instagram bằng Cookie thành công!")
                 else:
-                    print("✅ Đăng nhập Instagram bằng Cookie thành công!")
+                    if login_method == 1:
+                        print("❌ Không có cookie để đăng nhập. (Cấu hình: Chỉ đăng nhập bằng Cookie) -> Dừng.")
+                        return False
+                    else:
+                        print("❌ Không có cookie. Đang chuyển sang đăng nhập bằng Password...")
+                        cookie_failed = True
 
-            if login_method == 1 or cookie_failed or (login_method == 0 and not cookies):
-                if login_method == 1:
-                    print("🔄 Bắt đầu tiến trình đăng nhập bằng Username / Password...")
-                elif not cookies:
-                    print("❌ Không có cookie để đăng nhập. Đang thử đăng nhập bằng Password...")
+            # login_method 0: Chỉ User/Pass | Hoặc login_method 2 mà cookie thất bại
+            if login_method == 0 or cookie_failed:
+                print("🔄 Bắt đầu tiến trình đăng nhập bằng Username / Password...")
 
                 password = ""
                 two_fa_secret = ""

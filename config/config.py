@@ -14,3 +14,4 @@ RESOURCE_LOGGING = False
 # Tải hình ảnh khi chạy trình duyệt
 LOAD_IMAGES = True
 PROXY_TYPE = 1
+LOGIN_METHOD = 0

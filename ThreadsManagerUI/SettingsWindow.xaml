@@ -35,8 +35,9 @@
         <!-- Phương thức Đăng nhập -->
         <TextBlock Grid.Row="5" Text="Phương thức đăng nhập:" FontWeight="SemiBold" Margin="0,0,0,5" Foreground="#555"/>
         <ComboBox x:Name="CboLoginMethod" Grid.Row="6" Padding="8" Margin="0,0,0,15" BorderBrush="#CCCCCC" SelectedIndex="0">
-            <ComboBoxItem Content="Bằng Cookie (Ưu tiên)"/>
-            <ComboBoxItem Content="Bằng User/Pass"/>
+            <ComboBoxItem Content="Chỉ đăng nhập bằng User/Pass"/>
+            <ComboBoxItem Content="Chỉ đăng nhập bằng Cookie"/>
+            <ComboBoxItem Content="Đăng nhập bằng User/Pass và Cookie"/>
         </ComboBox>
 
         <!-- Tự động lấy Cookie Threads -->
